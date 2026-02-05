@@ -1,0 +1,86 @@
+{
+  "TableName": "sentinelflux-events",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "event_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "user_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ip_address",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "event_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST",
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "user-index",
+      "KeySchema": [
+        {
+          "AttributeName": "user_id",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "timestamp",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    },
+    {
+      "IndexName": "ip-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ip_address",
+          "KeyType": "HASH"
+        },
+        {
+          "AttributeName": "timestamp",
+          "KeyType": "RANGE"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      }
+    }
+  ],
+  "StreamSpecification": {
+    "StreamEnabled": false
+  },
+  "SSESpecification": {
+    "Enabled": true,
+    "SSEType": "KMS"
+  },
+  "Tags": [
+    {
+      "Key": "Project",
+      "Value": "SentinelFlux"
+    },
+    {
+      "Key": "Environment",
+      "Value": "PoC"
+    },
+    {
+      "Key": "Component",
+      "Value": "EventStorage"
+    }
+  ],
+  "PointInTimeRecoverySpecification": {
+    "PointInTimeRecoveryEnabled": true
+  }
+}

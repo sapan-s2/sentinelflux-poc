@@ -1,0 +1,147 @@
+{
+  "Comment": "SentinelFlux Review Workflow - Routes events for auto-resolution or human review based on threat level",
+  "StartAt": "EvaluateNeedsReview",
+  "States": {
+    "EvaluateNeedsReview": {
+      "Type": "Choice",
+      "Comment": "Determines if event requires human review based on threat level and needs_review flag",
+      "Choices": [
+        {
+          "Variable": "$.needs_review",
+          "BooleanEquals": true,
+          "Next": "HumanReviewTask"
+        },
+        {
+          "Variable": "$.threat_level",
+          "StringEquals": "CRITICAL",
+          "Next": "HumanReviewTask"
+        },
+        {
+          "Variable": "$.threat_level",
+          "StringEquals": "HIGH",
+          "Next": "HumanReviewTask"
+        }
+      ],
+      "Default": "AutoResolve"
+    },
+    "HumanReviewTask": {
+      "Type": "Task",
+      "Comment": "Invoke analyst decision Lambda with task token for human review callback",
+      "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:REGION:ACCOUNT_ID:function:analyst_decision",
+        "Payload": {
+          "event_id.$": "$.event_id",
+          "threat_level.$": "$.threat_level",
+          "summary.$": "$.summary",
+          "indicators.$": "$.indicators",
+          "task_token.$": "$$.Task.Token"
+        }
+      },
+      "ResultPath": "$.analyst_decision",
+      "Next": "ProcessDecision",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed",
+            "States.Timeout"
+          ],
+          "ResultPath": "$.error",
+          "Next": "ReviewFailed"
+        }
+      ],
+      "TimeoutSeconds": 86400,
+      "HeartbeatSeconds": 3600
+    },
+    "ProcessDecision": {
+      "Type": "Task",
+      "Comment": "Process analyst decision and update event status",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "sentinelflux-events",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, analyst_decision = :decision, reviewed_at = :timestamp",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "reviewed"
+          },
+          ":decision": {
+            "S.$": "$.analyst_decision.decision"
+          },
+          ":timestamp": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": "$.update_result",
+      "Next": "ReviewComplete"
+    },
+    "AutoResolve": {
+      "Type": "Task",
+      "Comment": "Auto-resolve low/medium severity events without human review",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "sentinelflux-events",
+        "Key": {
+          "event_id": {
+            "S.$": "$.event_id"
+          }
+        },
+        "UpdateExpression": "SET #status = :status, resolution = :resolution, resolved_at = :timestamp",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":status": {
+            "S": "auto_resolved"
+          },
+          ":resolution": {
+            "S": "Automatically resolved - threat level below review threshold"
+          },
+          ":timestamp": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": "$.update_result",
+      "Next": "AutoResolveComplete"
+    },
+    "AutoResolveComplete": {
+      "Type": "Pass",
+      "Comment": "Event auto-resolved successfully",
+      "Result": {
+        "status": "auto_resolved",
+        "message": "Event automatically resolved"
+      },
+      "ResultPath": "$.completion",
+      "End": true
+    },
+    "ReviewComplete": {
+      "Type": "Pass",
+      "Comment": "Human review completed successfully",
+      "Result": {
+        "status": "reviewed",
+        "message": "Event reviewed by analyst"
+      },
+      "ResultPath": "$.completion",
+      "End": true
+    },
+    "ReviewFailed": {
+      "Type": "Pass",
+      "Comment": "Human review process failed or timed out",
+      "Result": {
+        "status": "review_failed",
+        "message": "Review process encountered an error"
+      },
+      "ResultPath": "$.completion",
+      "End": true
+    }
+  }
+}

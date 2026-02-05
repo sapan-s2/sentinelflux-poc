@@ -1,0 +1,7 @@
+2024-02-05T08:15:23Z | auth.log | user=jdoe | action=login_failed | ip=192.168.1.100 | system=prod-web-01 | reason=invalid_password | attempts=3
+2024-02-05T08:15:45Z | auth.log | user=jdoe | action=login_failed | ip=192.168.1.100 | system=prod-web-01 | reason=invalid_password | attempts=5
+2024-02-05T08:16:12Z | auth.log | user=admin | action=privilege_escalation | ip=10.0.5.42 | system=prod-db-01 | from_role=user | to_role=superuser | status=success
+2024-02-05T08:17:30Z | auth.log | user=msmith | action=login_success | ip=203.0.113.45 | system=prod-api-01 | location=US-EAST | session_id=sess_abc123
+2024-02-05T08:17:55Z | auth.log | user=msmith | action=login_success | ip=198.51.100.78 | system=prod-api-02 | location=EU-WEST | session_id=sess_xyz789
+2024-02-05T08:18:10Z | auth.log | user=msmith | action=access_sensitive_data | ip=198.51.100.78 | system=prod-db-02 | resource=/api/users/all | location=EU-WEST
+2024-02-05T08:19:45Z | auth.log | user=service_account | action=api_auth_failed | ip=172.16.0.25 | system=prod-api-03 | reason=expired_token | service=payment_processor
