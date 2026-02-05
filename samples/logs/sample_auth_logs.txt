@@ -1,0 +1,7 @@
+2024-01-15 10:32:45 auth-server: Failed login attempt for user admin from 203.0.113.45
+2024-01-15 10:33:12 auth-server: Failed login attempt for user admin from 203.0.113.45
+2024-01-15 10:33:58 auth-server: Failed login attempt for user admin from 203.0.113.45
+2024-01-15 10:35:28 app-server: Privilege escalation detected for user jdoe on host web-01
+2024-01-15 10:42:15 auth-server: Successful login for user admin from 198.51.100.22 (US-East)
+2024-01-15 10:43:02 auth-server: Successful login for user admin from 192.0.2.100 (EU-West)
+2024-01-15 10:43:58 firewall: Blocked connection attempt from 203.0.113.89 to internal service ssh on port 22

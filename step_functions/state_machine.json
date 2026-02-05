@@ -1,0 +1,58 @@
+{
+  "Comment": "SentinelFlux Human Review Workflow",
+  "StartAt": "CheckIfHumanReviewNeeded",
+  "States": {
+    "CheckIfHumanReviewNeeded": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.needs_review",
+          "BooleanEquals": true,
+          "Next": "HumanReviewTask"
+        }
+      ],
+      "Default": "AutoResolve"
+    },
+    "HumanReviewTask": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "$.review_function_arn",
+        "Payload": {
+          "event_id.$": "$.event_id",
+          "severity.$": "$.severity",
+          "threats.$": "$.threats",
+          "summary.$": "$.summary"
+        }
+      },
+      "ResultPath": "$.review_result",
+      "Next": "ApplyDecision"
+    },
+    "AutoResolve": {
+      "Type": "Pass",
+      "Result": {
+        "decision": "auto_resolved",
+        "notes": "Threat severity below review threshold"
+      },
+      "ResultPath": "$.decision",
+      "Next": "Finish"
+    },
+    "ApplyDecision": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "$.apply_decision_function_arn",
+        "Payload": {
+          "event_id.$": "$.event_id",
+          "decision.$": "$.review_result.Payload.decision",
+          "notes.$": "$.review_result.Payload.notes"
+        }
+      },
+      "ResultPath": "$.apply_result",
+      "Next": "Finish"
+    },
+    "Finish": {
+      "Type": "Succeed"
+    }
+  }
+}

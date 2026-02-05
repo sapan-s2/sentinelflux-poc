@@ -1,0 +1,61 @@
+{
+  "TableName": "SentinelFluxResults",
+  "KeySchema": [
+    {
+      "AttributeName": "event_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "event_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "user",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "ip",
+      "AttributeType": "S"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  },
+  "GlobalSecondaryIndexes": [
+    {
+      "IndexName": "user-index",
+      "KeySchema": [
+        {
+          "AttributeName": "user",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    },
+    {
+      "IndexName": "ip-index",
+      "KeySchema": [
+        {
+          "AttributeName": "ip",
+          "KeyType": "HASH"
+        }
+      ],
+      "Projection": {
+        "ProjectionType": "ALL"
+      },
+      "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+      }
+    }
+  ]
+}

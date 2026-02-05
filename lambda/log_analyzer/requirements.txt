@@ -1,0 +1,13 @@
+# AWS SDK for Python
+boto3>=1.28.0
+
+# HTTP requests (optional, for external APIs)
+requests>=2.31.0
+
+# TODO: Add AWS Bedrock-specific packages when available
+# The Bedrock runtime is included in boto3, but may require:
+# - Specific boto3 version with Bedrock support
+# - Additional packages for model-specific features
+# 
+# Example:
+# boto3>=1.28.85  # Version with Bedrock runtime support
