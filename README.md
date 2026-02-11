@@ -23,6 +23,7 @@ Key components:
 - **DynamoDB**: Event storage with indexes on user and IP address
 - **S3**: Log ingestion and storage
 - **Bedrock**: AI-powered threat analysis
+- **Deep Analysis Agent**: LangGraph-powered threat intelligence agent for advanced correlation and reasoning (NEW)
 
 See `architecture/` directory for detailed C4 models, sequence diagrams, and threat memory graph.
 
@@ -132,6 +133,12 @@ sentinelflux-poc/
 ├── lambda/                 # Lambda functions
 │   ├── log_analyzer/       # Main analysis function
 │   └── analyst_decision/   # Human review function
+├── deep_analysis_agent/    # NEW: LangGraph threat intelligence agent
+│   ├── api.py             # FastAPI service
+│   ├── graph.py           # LangGraph workflow
+│   ├── nodes/             # Analysis nodes
+│   ├── README.md          # Detailed documentation
+│   └── Dockerfile         # Container deployment
 ├── step_functions/         # Step Functions definitions
 ├── infrastructure/         # Infrastructure as Code and configs
 ├── samples/               # Sample data
@@ -146,6 +153,7 @@ sentinelflux-poc/
 - **Product Overview**: See `docs/product-one-pager.md`
 - **Roadmap**: See `docs/roadmap.md`
 - **Development Plan**: See `docs/development-plan.md`
+- **Deep Analysis Agent**: See `deep_analysis_agent/README.md` for advanced threat intelligence features
 
 ## Security Notes
 
