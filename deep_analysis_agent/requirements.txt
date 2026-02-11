@@ -1,0 +1,17 @@
+# Deep Analysis Agent Dependencies
+
+# Core dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# AWS SDK
+boto3>=1.34.0
+botocore>=1.34.0
+
+# Optional: LangGraph (if available)
+# langgraph>=0.0.1
+
+# Utilities
+python-multipart==0.0.6
+python-json-logger==2.0.7
