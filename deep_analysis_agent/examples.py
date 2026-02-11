@@ -13,8 +13,8 @@ import os
 import json
 from typing import Dict, Any
 
-# Add project root to path
-sys.path.insert(0, '/home/runner/work/sentinelflux-poc/sentinelflux-poc')
+# Add project root to path (relative to this file)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 def example_api_usage():

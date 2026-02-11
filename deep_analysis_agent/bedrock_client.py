@@ -215,7 +215,7 @@ Format response as JSON array with objects: {{category, priority (HIGH/MEDIUM/LO
                 end = content.rfind("}") + 1
                 json_str = content[start:end]
                 return json.loads(json_str)
-        except:
+        except (json.JSONDecodeError, ValueError, KeyError):
             pass
         
         # Fallback: structure as text
@@ -237,7 +237,7 @@ Format response as JSON array with objects: {{category, priority (HIGH/MEDIUM/LO
                 end = content.rfind("]") + 1
                 json_str = content[start:end]
                 return json.loads(json_str)
-        except:
+        except (json.JSONDecodeError, ValueError, KeyError):
             pass
         
         # Fallback
